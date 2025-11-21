@@ -6,6 +6,8 @@ https://magicmirror.builders/<br>
 
 This module uses https://github.com/dathbe/MMM-CustomText to provide a message on the MagicMirror if there are MagicMirror module updates available to be installed.  
 
+After developing this module, the developer discovered that the default updatenotification module of MagicMirror has similar functionality when the useModulesFromConfig option is set to `false`.  So it is doubtful is anyone needs to use this module.  
+
 ## Installation
 
 ```bash
