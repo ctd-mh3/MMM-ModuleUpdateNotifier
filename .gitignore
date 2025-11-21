@@ -1,0 +1,6 @@
+# General
+.DS_Store
+
+token.json
+credentials.json
+node_modules
