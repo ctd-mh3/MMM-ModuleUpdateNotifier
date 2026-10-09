@@ -18,25 +18,35 @@ Module.register("MMM-ModuleUpdateNotifier", {
     // Hide this module entirely (no UI)
     this.hide(0);
 
-    // Handshake
-    this.sendSocketNotification("MODULES_READY");
+    // Socket notifications sent from start() are lost on MM 2.38.0+ (async socket init),
+    // so the handshake and first check are deferred until MODULE_DOM_CREATED
+    this.handshakeDone = false;
+  },
+
+  notificationReceived: function (notification, payload, sender) {
+
+    if (notification !== "MODULE_DOM_CREATED" || this.handshakeDone) {
+      return;
+    }
+
+    this.handshakeDone = true;
 
     var self = this;
 
-    // Perform shallow merge with self.config from MagicMirror/config/config.js having precedence
-    // Understand some defaults (e.g., checkIntervalInMS) are not used in MODULES_START_CHECK but for simplicity leaving all defaults in the one structure
-    const mergedConfig = { ...defaults, ...(self.config || {}) };
+    // Handshake
+    this.sendSocketNotification("MODULES_READY", { customTextUniqueID: this.config.customTextUniqueID });
 
     // Trigger first check immediately, then on interval
+    // this.config already has defaults merged in by MagicMirror with config.js values taking precedence
     this.sendSocketNotification("MODULES_START_CHECK", this.config);
 
     // Set check interval to what was provided in config.js or use default
-    const checkIntervalInMS = this.config.checkIntervalMS || this.defaults.checkIntervalInMS;
+    const checkIntervalInMS = this.config.checkIntervalInMS;
 
     this.logInformation("info", "MMM-ModuleUpdateNotifier: setting command interval (MS) to " + checkIntervalInMS);
 
     // Set this check to occur at regular intervals
-    setInterval(function() { self.sendSocketNotification("MODULES_START_CHECK", mergedConfig); }, checkIntervalInMS);
+    setInterval(function() { self.sendSocketNotification("MODULES_START_CHECK", self.config); }, checkIntervalInMS);
   },
 
   getDom: function () {

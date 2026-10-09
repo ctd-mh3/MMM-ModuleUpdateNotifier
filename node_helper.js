@@ -25,7 +25,7 @@ module.exports = NodeHelper.create({
 
       // Handshake: client ready -> send last cached result immediately
       this.logInformation("info", "MMM-ModuleUpdateNotifier(node_helper.js): received MODULES_READY, sending MODULES_RESULT w/ lastResult: [" + this.lastResult.toString() + "]");
-      this.sendSocketNotification("MODULES_RESULT", { modules: this.lastResult });
+      this.sendSocketNotification("MODULES_RESULT", { modules: this.lastResult, customTextUniqueID: payload ? payload.customTextUniqueID : null });
     } else if (notification === "MODULES_START_CHECK") {
 
       this.logInformation("info", "MMM-ModuleUpdateNotifier(node_helper.js): MODULES_START_CHECK received");
